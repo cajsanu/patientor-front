@@ -29,7 +29,6 @@ const App = () => {
           Patientor
         </Typography>
         <Divider hidden />
-
         <PatientListPage patients={patients} setPatients={setPatients} />
       </Container>
     </div>
