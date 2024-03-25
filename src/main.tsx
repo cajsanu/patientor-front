@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import App from "./App.tsx";
-import { SinglePatientPage } from "./components/SinglePatientPage.tsx";
+import { SinglePatientPage } from "./components/SinglePatientPage/index.tsx";
 
 const router = createBrowserRouter([
   {

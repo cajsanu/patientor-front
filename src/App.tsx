@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { Button, Divider, Container, Typography } from "@mui/material";
+import { Divider, Container, Typography } from "@mui/material";
 
 import { apiBaseUrl } from "./constants";
 import { Patient } from "./types";
@@ -28,9 +28,6 @@ const App = () => {
         <Typography variant="h3" style={{ marginBottom: "0.5em" }}>
           Patientor
         </Typography>
-        <Button variant="contained" color="primary">
-          Home
-        </Button>
         <Divider hidden />
 
         <PatientListPage patients={patients} setPatients={setPatients} />
