@@ -9,7 +9,6 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import WorkIcon from "@mui/icons-material/Work";
 import StarIcon from "@mui/icons-material/Star";
 import { red, orange, yellow, green } from "@mui/material/colors";
-import { Alert } from "@mui/material";
 
 const BaseInfo = ({ entry }: { entry: Entry }) => {
   return (

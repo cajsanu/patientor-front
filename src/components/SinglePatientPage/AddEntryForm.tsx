@@ -1,39 +1,48 @@
-import { TextField, Grid, Button } from "@mui/material";
+import { TextField, Grid, Button, Alert } from "@mui/material";
 import { SyntheticEvent, useState } from "react";
 import { EntryWithoutId } from "../../types";
 
 interface Props {
-    onCancel: () => void;
-    onSubmit: (values: EntryWithoutId) => void;
-  }
+  onCancel: () => void;
+  onSubmit: (values: EntryWithoutId) => void;
+}
 
-export const AddEntryForm = ({onCancel, onSubmit}: Props) => {
+export const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
   const [specialist, setSpecialist] = useState("");
   const [description, setDescription] = useState("");
   const [date, setDate] = useState("");
   const [rating, setRating] = useState("");
+  const [error, setError] = useState("");
 
   const style = {
     padding: 20,
     paddingBottom: 50,
     border: "solid",
-    boderColor: "grey"
-  }
+    boderColor: "grey",
+  };
 
   const addEntry = (event: SyntheticEvent) => {
-    event.preventDefault
-    onSubmit({
+    event.preventDefault();
+    if (specialist && description && date && rating) {
+      onSubmit({
         specialist,
         description,
         date,
         healthCheckRating: Number(rating),
-        type: "HealthCheck"
+        type: "HealthCheck",
         // hardcoded entry type to be healthCheck for now. Add switch cases later to handle all entry types
-    })
-  }
+      });
+    } else {
+      setError("Fields cannot be left empty");
+      setTimeout(() => {
+        setError("");
+      }, 5000);
+    }
+  };
 
   return (
-    <div style={{paddingBottom: 40}}>
+    <div style={{ paddingBottom: 40 }}>
+      {error && <Alert severity="error">{error}</Alert>}
       <form style={style} onSubmit={addEntry}>
         <h3>New entry</h3>
         <TextField
@@ -57,6 +66,7 @@ export const AddEntryForm = ({onCancel, onSubmit}: Props) => {
         />
         <TextField
           label="Healthcheck rating"
+          placeholder="0-3"
           fullWidth
           value={rating}
           onChange={({ target }) => setRating(target.value)}
