@@ -9,6 +9,7 @@ import LocalHospitalIcon from "@mui/icons-material/LocalHospital";
 import WorkIcon from "@mui/icons-material/Work";
 import StarIcon from "@mui/icons-material/Star";
 import { red, orange, yellow, green } from "@mui/material/colors";
+import { Alert } from "@mui/material";
 
 const BaseInfo = ({ entry }: { entry: Entry }) => {
   return (
@@ -57,42 +58,47 @@ const OccupationalEntries = ({
 };
 
 const HealthCheckEntries = ({ entry }: { entry: HealthCheckEntry }) => {
-  switch (entry.healthCheckRating) {
-    case 0:
-      return (
-        <div>
-          <StarIcon sx={{ color: green[500] }} />
-          <p>Doctor: {entry.specialist}</p>
-        </div>
-      );
-    case 1:
-      return (
-        <div>
-          <StarIcon sx={{ color: yellow[500] }} />
-          <p>Doctor: {entry.specialist}</p>
-        </div>
-      );
-    case 2:
-      return (
-        <div>
-          <StarIcon sx={{ color: orange[500] }} />
-          <p>Doctor: {entry.specialist}</p>
-        </div>
-      );
-    case 3:
-      return (
-        <div>
-          <StarIcon sx={{ color: red[500] }} />
-          <p>Doctor: {entry.specialist}</p>
-        </div>
-      );
-    default:
-      return "no healt rating yet";
-  }
+  if (
+    entry.healthCheckRating === 0 ||
+    entry.healthCheckRating === 1 ||
+    entry.healthCheckRating === 2 ||
+    entry.healthCheckRating === 3
+  ) {
+    switch (entry.healthCheckRating) {
+      case 0:
+        return (
+          <div>
+            <StarIcon sx={{ color: green[500] }} />
+            <p>Doctor: {entry.specialist}</p>
+          </div>
+        );
+      case 1:
+        return (
+          <div>
+            <StarIcon sx={{ color: yellow[500] }} />
+            <p>Doctor: {entry.specialist}</p>
+          </div>
+        );
+      case 2:
+        return (
+          <div>
+            <StarIcon sx={{ color: orange[500] }} />
+            <p>Doctor: {entry.specialist}</p>
+          </div>
+        );
+      case 3:
+        return (
+          <div>
+            <StarIcon sx={{ color: red[500] }} />
+            <p>Doctor: {entry.specialist}</p>
+          </div>
+        );
+    }
+  } 
 };
 
 interface EntryProp {
-  entry: Entry;
+  entry: HealthCheckEntry | OccupationalHealthcareEntry | HospitalEntry;
 }
 
 export const Entries = (props: EntryProp) => {
