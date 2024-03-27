@@ -22,7 +22,7 @@ export enum HealthCheckRating {
 }
 
 export interface HealthCheckEntry extends BaseEntry {
-  type: EntryType;
+  type: "HealthCheck";
   healthCheckRating: HealthCheckRating;
 }
 
@@ -32,7 +32,7 @@ interface SickLeave {
 }
 
 export interface OccupationalHealthcareEntry extends BaseEntry {
-  type: EntryType;
+  type: "OccupationalHealthcare";
   employerName: string;
   sickLeave?: SickLeave;
 }
@@ -43,7 +43,7 @@ interface Discharge {
 }
 
 export interface HospitalEntry extends BaseEntry {
-  type: EntryType;
+  type: "Hospital";
   discharge: Discharge;
 }
 
