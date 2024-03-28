@@ -1,6 +1,15 @@
-import { TextField, Grid, Button, Alert } from "@mui/material";
-import { SyntheticEvent, useState } from "react";
-import { EntryType, EntryWithoutId } from "../../types";
+import {
+  TextField,
+  Grid,
+  Button,
+  Alert,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
+import { SyntheticEvent, useEffect, useState } from "react";
+import { Diagnosis, EntryType, EntryWithoutId } from "../../types";
+import diagnoseService from "../../services/diagnoses";
 
 interface Props {
   onCancel: () => void;
@@ -18,6 +27,8 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
   const [sickLeaveEnd, setSickLeaveEnd] = useState<string>("");
   const [dischargeDate, setDischargeDate] = useState<string>("");
   const [criteria, setCriteria] = useState<string>("");
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+  const [diagnosisOptions, setDiagnosisOptions] = useState<Diagnosis[]>();
   const [error, setError] = useState<string>();
 
   const style = {
@@ -27,51 +38,41 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
     boderColor: "grey",
   };
 
+  useEffect(() => {
+    const fetchDiagnoses = async () => {
+      const diagnoses = await diagnoseService.getAll();
+      setDiagnosisOptions(diagnoses);
+    };
+    fetchDiagnoses();
+  }, []);
+
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
-    if (
-      specialist &&
-      description &&
-      date &&
-      rating &&
-      entryType === "HealthCheck"
-    ) {
+    if (entryType === "HealthCheck") {
       onSubmit({
         specialist,
         description,
         date,
+        diagnosisCodes,
         healthCheckRating: Number(rating),
         type: entryType,
       });
-    } else if (
-      specialist &&
-      description &&
-      date &&
-      sickLeaveStart &&
-      sickLeaveEnd &&
-      employer &&
-      entryType === "OccupationalHealthcare"
-    ) {
+    } else if (entryType === "OccupationalHealthcare") {
       onSubmit({
         specialist,
         description,
         date,
+        diagnosisCodes,
         sickLeave: { startDate: sickLeaveStart, endDate: sickLeaveEnd },
         employerName: employer,
         type: entryType,
       });
-    } else if (
-      specialist &&
-      description &&
-      date &&
-      dischargeDate &&
-      criteria &&
-      entryType === "Hospital"
-    ) {
+    } else if (entryType === "Hospital") {
       onSubmit({
         specialist,
         description,
         date,
+        diagnosisCodes,
         discharge: { date: dischargeDate, criteria: criteria },
         type: entryType,
       });
@@ -101,20 +102,44 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
           onChange={({ target }) => setDescription(target.value)}
         />
         <TextField
-          label="Date"
-          placeholder="YYYY-MM-DD"
+          type="date"
           fullWidth
           value={date}
           onChange={({ target }) => setDate(target.value)}
         />
+        <InputLabel style={{ marginTop: 20 }}>Diagnosis codes</InputLabel>
+        <Select
+          fullWidth
+          value={diagnosisCodes}
+          multiple
+          onChange={({ target: { value } }) =>
+            setDiagnosisCodes(
+              typeof value === "string" ? value.split(",") : value
+            )
+          }
+        >
+          {diagnosisOptions
+            ? diagnosisOptions.map((option) => (
+                <MenuItem key={option.name} value={option.code}>
+                  {option.code} {option.name}
+                </MenuItem>
+              ))
+            : null}
+        </Select>
         {entryType === "HealthCheck" ? (
-          <TextField
-            label="Healthcheck rating"
-            placeholder="0-3"
-            fullWidth
-            value={rating}
-            onChange={({ target }) => setRating(target.value)}
-          />
+          <div>
+            <InputLabel style={{ marginTop: 20 }}>Health rating</InputLabel>
+            <Select
+              fullWidth
+              value={rating}
+              onChange={({ target }) => setRating(target.value)}
+            >
+              <MenuItem value={0}>0</MenuItem>
+              <MenuItem value={1}>1</MenuItem>
+              <MenuItem value={2}>2</MenuItem>
+              <MenuItem value={3}>3</MenuItem>
+            </Select>
+          </div>
         ) : null}
         {entryType === "OccupationalHealthcare" ? (
           <div>
@@ -124,17 +149,15 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
               value={employer}
               onChange={({ target }) => setEmployer(target.value)}
             />
-            Sickleave
+            <InputLabel style={{ marginTop: 20 }}>Sick leave</InputLabel>
             <TextField
-              label="StartDate"
-              placeholder="YYYY-MM-DD"
+              type="date"
               fullWidth
               value={sickLeaveStart}
               onChange={({ target }) => setSickLeaveStart(target.value)}
             />
             <TextField
-              label="EndDate"
-              placeholder="YYYY-MM-DD"
+              type="date"
               fullWidth
               value={sickLeaveEnd}
               onChange={({ target }) => setSickLeaveEnd(target.value)}
@@ -143,10 +166,9 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
         ) : null}
         {entryType === "Hospital" ? (
           <div>
-            Discharge
+            <InputLabel style={{ marginTop: 20 }}>Discharge</InputLabel>
             <TextField
-              label="Date"
-              placeholder="YYYY-MM-DD"
+              type="date"
               fullWidth
               value={dischargeDate}
               onChange={({ target }) => setDischargeDate(target.value)}
@@ -159,23 +181,6 @@ export const AddEntryForm = ({ onCancel, onSubmit, entryType }: Props) => {
             />
           </div>
         ) : null}
-
-        {/* <InputLabel style={{ marginTop: 20 }}>Gender</InputLabel>
-        <Select
-          label="Gender"
-          fullWidth
-          value={gender}
-          onChange={onGenderChange}
-        >
-        {genderOptions.map(option =>
-          <MenuItem
-            key={option.label}
-            value={option.value}
-          >
-            {option.label
-          }</MenuItem>
-        )}
-        </Select> */}
 
         <Grid>
           <Grid item>
